@@ -1,15 +1,15 @@
 const errorHandler = require("../helpers/error_handler");
+const isValid = require("../helpers/isValidObjectId");
 const User = require("../models/user");
-const { default: mongoose } = require("mongoose");
 
 const addUser = async (req, res) => {
   try {
-    const { name,email,password } = req.body;
-    const user = await User.findOne({name,email,password});
+    const { name, email, password } = req.body;
+    const user = await User.findOne({ name, email, password });
     if (user) {
       return res.status(400).json({ message: "User already exists" });
     }
-    const newTerm = new User({ name,email,password });
+    const newTerm = new User({ name, email, password });
     newTerm.save();
 
     res.status(201).json({ message: "User added successfully" });
@@ -32,7 +32,6 @@ const getUser = async (req, res) => {
 const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: "No user found" });
@@ -44,16 +43,12 @@ const getUserById = async (req, res) => {
 };
 const updateUser = async (req, res) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).send({
-        message: "Invalid  id",
-      });
-    }
+    isValid(req, res);
     const { id } = req.params;
-    const { name,email,password } = req.body;
+    const { name, email, password } = req.body;
     const user = await User.findByIdAndUpdate(
       id,
-      { name,email,password },
+      { name, email, password },
       { new: true }
     );
     if (!user) {
@@ -66,11 +61,7 @@ const updateUser = async (req, res) => {
 };
 const deleteUser = async (req, res) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).send({
-        message: "Invalid  id",
-      });
-    }
+    isValid(req, res);
     const { id } = req.params;
     const user = await User.findByIdAndDelete(id);
     if (!user) {

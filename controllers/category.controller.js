@@ -1,11 +1,11 @@
 const errorHandler = require("../helpers/error_handler");
+const isValid = require("../helpers/isValidObjectId");
 const Category = require("../models/category");
-const { default: mongoose } = require("mongoose");
 
 const addCategory = async (req, res) => {
   try {
     const { name } = req.body;
-    const category = await Category.findOne({name});
+    const category = await Category.findOne({ name });
     if (category) {
       return res.status(400).json({ message: "category already exists" });
     }
@@ -32,7 +32,6 @@ const getCategory = async (req, res) => {
 const getCategoryById = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const category = await Category.findById(id);
     if (!category) {
       return res.status(404).json({ message: "No category found" });
@@ -44,11 +43,7 @@ const getCategoryById = async (req, res) => {
 };
 const updateCategory = async (req, res) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).send({
-        message: "Invalid  id",
-      });
-    }
+    isValid(req, res);
     const { id } = req.params;
     const { name } = req.body;
     const category = await Category.findByIdAndUpdate(
@@ -66,11 +61,7 @@ const updateCategory = async (req, res) => {
 };
 const deleteCategory = async (req, res) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).send({
-        message: "Invalid  id",
-      });
-    }
+    isValid(req, res);
     const { id } = req.params;
     const category = await Category.findByIdAndDelete(id);
     if (!category) {

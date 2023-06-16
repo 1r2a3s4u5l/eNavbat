@@ -1,6 +1,6 @@
 const errorHandler = require("../helpers/error_handler");
+const isValid = require("../helpers/isValidObjectId");
 const Product = require("../models/product");
-const { default: mongoose } = require("mongoose");
 
 const addProduct = async (req, res) => {
   try {
@@ -32,7 +32,6 @@ const getProduct = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
     const product = await Product.findById(id).populate("category_id");
     if (!product) {
       return res.status(404).json({ message: "No product found" });
@@ -44,11 +43,7 @@ const getProductById = async (req, res) => {
 };
 const updateProduct = async (req, res) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).send({
-        message: "Invalid  id",
-      });
-    }
+    isValid(req, res);
     const { id } = req.params;
     const { name,price,category_id } = req.body;
     const product = await Product.findByIdAndUpdate(
@@ -66,11 +61,7 @@ const updateProduct = async (req, res) => {
 };
 const deleteProduct = async (req, res) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).send({
-        message: "Invalid  id",
-      });
-    }
+    isValid(req, res);
     const { id } = req.params;
     const product = await Product.findByIdAndDelete(id);
     if (!product) {
