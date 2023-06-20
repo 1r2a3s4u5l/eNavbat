@@ -1,6 +1,9 @@
 const errorHandler = require("../helpers/error_handler");
 const isValid = require("../helpers/isValidObjectId");
 const User = require("../models/user");
+const bcrypt = require("bcrypt");
+const MyJwt = require("../services/JwtServices");
+const config = require('config');
 
 const addUser = async (req, res) => {
   try {
@@ -72,6 +75,31 @@ const deleteUser = async (req, res) => {
     errorHandler(res, error);
   }
 };
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).send({ message: "Email yoki parol noto'g'ri1" });
+    }
+    const payload = {
+      id: user._id,
+      userRoles: ["WRITE", "READ"],
+    };
+    const tokens = MyJwt.generateTokens(payload);
+    user.user_token = tokens.refreshToken;
+    await user.save();
+
+    res.cookie("refreshToken", tokens.refreshToken, {
+      maxAge: config.get("refresh_ms"),
+      httpOnly: true,
+    });
+
+    res.status(200).send({ ...tokens });
+  } catch (error) {
+    errorHandler(res, error);
+  }
+};
 
 module.exports = {
   getUser,
@@ -79,4 +107,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getUserById,
+  loginUser,
 };

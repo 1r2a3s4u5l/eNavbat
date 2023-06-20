@@ -1,6 +1,7 @@
 const errorHandler = require("../helpers/error_handler");
 const isValid = require("../helpers/isValidObjectId");
 const Order = require("../models/order");
+const User = require("../models/user");
 
 const addOrder = async (req, res) => {
   try {
@@ -77,6 +78,32 @@ const deleteOrder = async (req, res) => {
     errorHandler(res, error);
   }
 };
+const getorderbyuser_Id = async (req, res) => {
+  try {
+    const { user_id } = req.params;
+    const user = await User.findOne({ _id: user_id });
+
+    if (!user || user.length == 0) {
+      return res.status(400).send({ message: "user_id not Found" });
+    }
+
+    const order = await Order.find({})
+      .populate("user_id")
+      .populate({
+        path: "product_id",
+        populate: { path: "category_id" },
+      });
+
+    if (!order || order.length === 0) {
+      return res.status(404).json({ message: "No order found" });
+    }
+
+    res.status(200).json(order);
+  } catch (error) {
+
+    errorHandler(res, error);
+  }
+};
 
 module.exports = {
   getOrder,
@@ -84,4 +111,5 @@ module.exports = {
   updateOrder,
   deleteOrder,
   getOrderById,
+  getorderbyuser_Id,
 };

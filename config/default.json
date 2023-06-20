@@ -1,4 +1,10 @@
 {
-    "port":3000,
-    "dbUri":"mongodb://127.0.0.1:27017/enavbat"
+  "port": 3000,
+  "dbUri": "mongodb://127.0.0.1:27017/enavbat",
+  "secret": "mysecretkeyisveryverysecret",
+  "access_key": "buAccesKeyUchunMaxsusShifrlanganKey",
+  "refresh_key": "buRefreshKeyUchunMaxsusShifrlanganKeyUniUmumanDeshiflayOlmayman",
+  "access_time": "15m",
+  "refresh_time": "30d",
+  "refresh_ms": 2592000000
 }
